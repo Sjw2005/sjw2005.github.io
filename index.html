@@ -1,11 +1,383 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>yaorongke</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页 | 极简暗黑风格</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a1c;
+            --card-bg: #222224;
+            --text-main: #eaeaea;
+            --text-dim: #99999c;
+            --accent-gold: #cbb49e;
+            --border-line: rgba(255, 255, 255, 0.06);
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: 
+                radial-gradient(circle at 0% 100%, rgba(203, 180, 158, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.02) 0%, transparent 30%);
+            overflow-x: hidden;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 1400px;
+            padding: 2rem 3rem;
+            height: 95vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部导航与标题 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+            font-weight: 500;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+            margin-bottom: 0.3rem;
+        }
+
+        .header-left p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .header-right { display: flex; align-items: center; gap: 2rem; }
+
+        .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+
+        .nav-links li a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            padding-bottom: 4px;
+            border-bottom: 1px solid transparent;
+        }
+
+        .nav-links li a:hover { color: var(--text-main); }
+        .nav-links li a.active { color: var(--accent-gold); border-bottom: 1px solid var(--accent-gold); }
+
+        /* 主体网格布局 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 280px 1fr; /* 左侧固定，右侧动态区域 */
+            gap: 1.5rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-line);
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-family: var(--font-serif);
+            font-size: 1.1rem;
+            color: var(--text-main);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-line);
+        }
+
+        /* 左侧固定列 */
+        .col-left { display: flex; flex-direction: column; }
+        .col-left .card { height: 100%; }
+        
+        .profile-pic {
+            width: 100%; height: 280px; object-fit: cover;
+            border-radius: 8px; margin-bottom: 1.5rem; background-color: #333;
+        }
+
+        .contact-list { list-style: none; font-size: 0.85rem; color: var(--text-dim); }
+        .contact-list li { margin-bottom: 0.8rem; display: flex; align-items: center; gap: 10px; }
+
+        /* 右侧动态内容区 */
+        .content-area {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* 自定义滚动条 */
+        .content-area::-webkit-scrollbar { width: 6px; }
+        .content-area::-webkit-scrollbar-track { background: transparent; }
+        .content-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        /* 选项卡容器 */
+        .tab-section {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .tab-section.active {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 电脑端内部再分两列 */
+            gap: 1.5rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 内部排版样式 */
+        .about-text { font-size: 0.9rem; color: var(--text-dim); line-height: 1.8; margin-bottom: 1rem; }
+        
+        .timeline-item { margin-bottom: 1.5rem; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .tl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+        .tl-title { font-size: 1rem; font-weight: 500; color: var(--text-main); }
+        .tl-date { font-size: 0.8rem; color: var(--accent-gold); }
+        .tl-role { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.5rem; }
+        .tl-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; margin-left: 16px; }
+        .tl-desc li { margin-bottom: 6px; list-style-type: disc; }
+
+        /* 技能标签 */
+        .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+        .tag {
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-line);
+            padding: 5px 14px; border-radius: 20px;
+            font-size: 0.8rem; color: var(--text-main);
+            transition: all 0.2s;
+        }
+        .tag:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+
+        /* 📱 手机端深度适配：恢复为常规上下滚动简历 */
+        @media (max-width: 900px) {
+            body { height: auto; display: block; overflow-x: hidden; }
+            .wrapper { height: auto; padding: 1.5rem 1rem; }
+            header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            
+            /* 手机端隐藏电脑导航，依赖自然滚动 */
+            .header-right { display: none; } 
+            
+            .grid-container { display: flex; flex-direction: column; }
+            .content-area { overflow: visible; padding-right: 0; }
+            
+            /* 强制显示所有 Tab，堆叠显示，就像普通简历一样 */
+            .tab-section {
+                display: flex !important;
+                flex-direction: column;
+                opacity: 1 !important;
+                animation: none !important;
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            .tab-section.active { display: flex; }
+            
+            /* 内部卡片间距调整 */
+            .card { padding: 1.5rem; margin-bottom: 0; }
+        }
+    </style>
 </head>
 <body>
-    <h1>yaorongke的个人主页</h1>
-    <h1>Hello ~</h1>
+
+<div class="wrapper">
+    <header>
+        <div class="header-left">
+            <h1>YOUR NAME</h1>
+            <p>Computer Science Undergraduate | Robotics & AI</p>
+        </div>
+        <div class="header-right">
+            <ul class="nav-links">
+                <li><a class="nav-btn active" data-target="tab-about">About</a></li>
+                <li><a class="nav-btn" data-target="tab-projects">Projects</a></li>
+                <li><a class="nav-btn" data-target="tab-skills">Skills</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="grid-container">
+        <aside class="col-left">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop" alt="Profile" class="profile-pic">
+                <ul class="contact-list">
+                    <li>✉️ your.email@example.com</li>
+                    <li>📞 (+86) 138-XXXX-XXXX</li>
+                    <li>📍 University Campus, China</li>
+                    <li>🐙 github.com/yourname</li>
+                </ul>
+            </div>
+        </aside>
+
+        <div class="content-area">
+            
+            <div id="tab-about" class="tab-section active">
+                <div class="card">
+                    <h2 class="card-title">ABOUT ME</h2>
+                    <p class="about-text">
+                        我是一名计算机科学专业的本科生，对机器人技术（Robotics）和计算机视觉（Computer Vision）有着浓厚的兴趣与实践经验。具备扎实的数学与算法基础，能够独立负责项目中视觉感知与系统框架的决策。
+                    </p>
+                    <p class="about-text">
+                        擅长在 Linux 环境下进行软硬件结合开发，致力于探索多模态融合与深度学习在现实场景中的落地应用。
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">EDUCATION</h2>
+                    <div class="timeline-item">
+                        <div class="tl-header">
+                            <span class="tl-title">XX大学</span>
+                            <span class="tl-date">202X - 至今</span>
+                        </div>
+                        <div class="tl-role">计算机科学与技术 (本科)</div>
+                        <ul class="tl-desc">
+                            <li>核心课程: 离散数学、数字电路、计算机体系结构、线性代数、大学物理等。</li>
+                            <li>持续关注前沿技术，对复杂分析与数据库管理有深入学习。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-projects" class="tab-section">
+                <div class="card" style="grid-column: 1 / -1;"> <h2 class="card-title">ROBOTICS & AI PROJECTS</h2>
+                    
+                    <div class="timeline-item">
+                        <div class="tl-header">
+                            <span class="tl-title">自主机器人研发项目 - "R2"</span>
+                            <span class="tl-date">核心开发者</span>
+                        </div>
+                        <div class="tl-role">视觉与框架决策负责人</div>
+                        <ul class="tl-desc" style="margin-bottom: 1.5rem;">
+                            <li>主导基于 ROS (Robot Operating System) 的机器人底层框架搭建与模块间通信逻辑设计。</li>
+                            <li>负责视觉模块的算法选型与落地，运用深度学习与计算机视觉技术实现环境感知与目标识别。</li>
+                            <li>在 Raspberry Pi 及高性能计算平台（i7-13620H, RTX 4060）上完成算法的部署与性能调优。</li>
+                        </ul>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="tl-header">
+                            <span class="tl-title">多模态医学图像融合 (MMIF) 研究</span>
+                            <span class="tl-date">算法研究</span>
+                        </div>
+                        <ul class="tl-desc">
+                            <li>调研并复现多模态医学图像融合的前沿深度学习模型。</li>
+                            <li>使用 Python 编写数据处理与模型评估脚本，分析不同模态数据（如MRI/CT）的特征提取策略。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-skills" class="tab-section">
+                <div class="card" style="grid-column: 1 / -1;">
+                    <h2 class="card-title">TECHNICAL SKILLS</h2>
+                    
+                    <div style="margin-bottom: 1rem;"><span class="tl-role" style="color:#eaeaea;">Programming & OS</span></div>
+                    <div class="skill-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">C/C++</span>
+                        <span class="tag">Linux</span>
+                        <span class="tag">ROS</span>
+                        <span class="tag">Git</span>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;"><span class="tl-role" style="color:#eaeaea;">AI & Machine Learning</span></div>
+                    <div class="skill-tags">
+                        <span class="tag">Computer Vision</span>
+                        <span class="tag">Deep Learning</span>
+                        <span class="tag">Reinforcement Learning</span>
+                        <span class="tag">MMIF</span>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;"><span class="tl-role" style="color:#eaeaea;">Hardware & Foundations</span></div>
+                    <div class="skill-tags">
+                        <span class="tag">Raspberry Pi</span>
+                        <span class="tag">Digital Circuits</span>
+                        <span class="tag">Computer Architecture</span>
+                        <span class="tag">Linear Algebra</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 判断是否为手机端 (CSS中设置的界限是900px)
+        const isMobile = () => window.innerWidth <= 900;
+
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const tabSections = document.querySelectorAll('.tab-section');
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // 如果是手机端，点击导航不触发切换逻辑（因为手机端是全屏滑动的）
+                if (isMobile()) return; 
+
+                // 移除所有按钮的 active 状态
+                navBtns.forEach(b => b.classList.remove('active'));
+                // 添加当前按钮的 active 状态
+                e.target.classList.add('active');
+
+                // 获取目标模块 ID
+                const targetId = e.target.getAttribute('data-target');
+
+                // 隐藏所有模块，显示目标模块
+                tabSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // 监听窗口大小变化，确保在电脑和手机切换时状态正确
+        window.addEventListener('resize', () => {
+            if (isMobile()) {
+                // 手机端：强制移除所有动态逻辑带来的隐藏效果
+                tabSections.forEach(section => section.classList.remove('active'));
+            } else {
+                // 恢复电脑端：确保至少有一个处于 active 状态
+                const hasActive = Array.from(tabSections).some(s => s.classList.contains('active'));
+                if (!hasActive) {
+                    document.getElementById('tab-about').classList.add('active');
+                    navBtns[0].classList.add('active');
+                }
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
